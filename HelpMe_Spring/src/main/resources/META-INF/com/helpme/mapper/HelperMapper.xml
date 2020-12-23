@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.helpme.mapper.HelperMapper">
+	<select id="login" parameterType="map" resultType="string">
+		SELECT HELPER_ID FROM HELPER 
+		WHERE HELPER_ID = #{helper_id} AND PASSWORD = #{helper_password}
+	</select>
+	
+	<select id="checkId" parameterType="string" resultType="_int">
+      SELECT COUNT(*) FROM HELPER WHERE HELPER_ID = #{id}
+   </select>
+	
+	<select id="getName" parameterType="string" resultType="string">
+		SELECT NAME FROM HELPER WHERE HELPER_ID = #{helper_id}
+	</select>
+	
+	<select id="getId" parameterType="string" resultType="string">
+		SELECT HELPER_ID FROM HELPER WHERE NAME = #{helper_name}
+	</select>
+	
+	<select id="getFare" parameterType="string" resultType="_int">
+		SELECT FARE FROM HELPER WHERE HELPER_ID = #{helper_id}
+	</select>
+	
+	<select id="getDetail" parameterType="string" resultType="com.helpme.domain.HelperVO">
+		SELECT * FROM HELPER WHERE HELPER_ID = #{helper_id}
+	</select>
+	
+	<update id="updatePassword" parameterType="map">
+		UPDATE HELPER SET PASSWORD = #{password} WHERE HELPER_ID = #{helper_id}
+	</update>
+	
+	<!-- 헬퍼 소개글 수정 -->
+	<update id="updateDescription" parameterType="map">
+		UPDATE HELPER SET INTRO_TITLE = #{title}, DESCRIPTION = #{content} WHERE HELPER_ID = #{helper_id}
+	</update>
+	
+	<!-- 헬퍼 언어 -->
+	<select id="getLanguages" parameterType="string" resultType="com.helpme.domain.Helper_LanguagesVO">
+		SELECT * FROM HELPER_LANGUAGES WHERE HELPER_ID = #{helper_id}
+	</select>
+	
+	<insert id="insertLanguage" parameterType="com.helpme.domain.Helper_LanguagesVO">
+		INSERT INTO HELPER_LANGUAGES VALUES(#{helperId}, #{level}, #{language})
+	</insert>
+	
+	<delete id="deleteLanguage" parameterType="map">
+		DELETE FROM HELPER_LANGUAGES WHERE HELPER_ID = #{helper_id} AND "LANGUAGE" = #{language}
+	</delete>
+	
+	<!-- 헬퍼 카테고리 서비스 -->
+	<select id="getSpecialty" parameterType="string" resultType="com.helpme.domain.Helper_SpecialtyVO">
+		SELECT * FROM HELPER_SPECIALTY WHERE HELPER_ID = #{helper_id}
+	</select>
+	
+	<delete id="deleteSpecialty" parameterType="map">
+		DELETE FROM HELPER_SPECIALTY WHERE HELPER_ID = #{helper_id} AND SPECIALIZED_FIELD = #{service}
+	</delete>
+	
+	<insert id="insertSpecialty" parameterType="com.helpme.domain.Helper_SpecialtyVO">
+		INSERT INTO HELPER_SPECIALTY VALUES(SPECIALTY_SEQ.NEXTVAL, #{helperId}, #{specializedField})
+	</insert>
+	
+	<!-- 헬퍼 학력 -->
+	<select id="getEducation" parameterType="string" resultType="com.helpme.domain.Helper_EducationVO">
+		SELECT * FROM HELPER_EDUCATION WHERE HELPER_ID = #{helper_id}
+	</select>
+	
+	<insert id="insertEducation" parameterType="com.helpme.domain.Helper_EducationVO">
+		INSERT INTO HELPER_EDUCATION VALUES(#{helperId}, #{education}, #{graduateYear})
+	</insert>
+	
+	<delete id="deleteEducation" parameterType="map">
+		DELETE FROM HELPER_EDUCATION WHERE HELPER_ID = #{helper_id} AND EDUCATION = #{education}
+	</delete>
+	
+	<!-- 헬퍼 경력 -->
+	<select id="getWork" parameterType="string" resultType="com.helpme.domain.Helper_WorkVO">
+		SELECT * FROM HELPER_WORK WHERE HELPER_ID = #{helper_id}
+	</select>
+	
+	<insert id="insertWork" parameterType="com.helpme.domain.Helper_WorkVO">
+		INSERT INTO HELPER_WORK VALUES(#{helperId}, #{workExperience}, #{workStartyear}, #{workEndyear})
+	</insert>
+	
+	<delete id="deleteWork" parameterType="map">
+		DELETE FROM HELPER_WORK WHERE HELPER_ID = #{helper_id} AND WORK_EXPERIENCE = #{work}
+	</delete>
+
+	<!-- 헬퍼 자격증 -->
+	<select id="getCertificate" parameterType="string" resultType="com.helpme.domain.Helper_CertificateVO">
+		SELECT * FROM HELPER_CERTIFICATE WHERE HELPER_ID = #{helper_id}
+	</select>
+	
+	<insert id="insertCertificate" parameterType="com.helpme.domain.Helper_CertificateVO">
+		INSERT INTO HELPER_CERTIFICATE VALUES(#{helperId}, #{certificate}, TO_DATE(#{dateObtained}, 'YYYY/MM/DD'))
+	</insert>
+	
+	<delete id="deleteCertificate" parameterType="map">
+		DELETE FROM HELPER_CERTIFICATE WHERE HELPER_ID = #{helper_id} AND CERTIFICATE = #{certificate}
+	</delete>
+	
+	<!-- 헬퍼 평점 -->
+	<update id="updateRating1">
+		UPDATE HELPER SET RATING_CNT = RATING_CNT + 1, TOTAL_RATING = TOTAL_RATING + #{rating}
+		WHERE HELPER_ID = #{helper_id}
+	</update>	
+	
+	<update id="updateRating2">
+		UPDATE HELPER SET AVG_RATING = (SELECT TOTAL_RATING FROM HELPER WHERE HELPER_ID = #{helper_id}) / 
+		(SELECT RATING_CNT FROM HELPER WHERE HELPER_ID = #{helper_id})
+		WHERE HELPER_ID = #{helper_id}
+	</update>	
+	
+	<!-- 헬퍼 사진 -->
+	<select id="getPics" parameterType="string" resultType="com.helpme.domain.Helper_PicsVO">
+		SELECT * FROM HELPER_PICS WHERE HELPER_ID = #{helper_id}
+	</select>
+	
+	<update id="updateMainPic" parameterType="map">
+		UPDATE HELPER_PICS SET MAIN_FILENAME = #{fileName} WHERE HELPER_ID = #{helper_id}
+	</update>
+	
+	<update id="updatePic1" parameterType="map">
+		UPDATE HELPER_PICS SET PIC1_FILENAME = #{fileName} WHERE HELPER_ID = #{helper_id}
+	</update>
+	
+	<update id="updatePic2" parameterType="map">
+		UPDATE HELPER_PICS SET PIC2_FILENAME = #{fileName} WHERE HELPER_ID = #{helper_id} 
+	</update>
+	
+	<update id="updatePic3" parameterType="map">
+		UPDATE HELPER_PICS SET PIC3_FILENAME = #{fileName} WHERE HELPER_ID = #{helper_id} 
+	</update>
+	
+	<update id="updatePic4" parameterType="map">
+		UPDATE HELPER_PICS SET PIC4_FILENAME = #{fileName} WHERE HELPER_ID = #{helper_id} 
+	</update>
+	
+	<update id="updatePic5" parameterType="map">
+		UPDATE HELPER_PICS SET PIC5_FILENAME = #{fileName} WHERE HELPER_ID = #{helper_id}
+	</update>
+	
+	</mapper>
+
+
+
+
+

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Config 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.helpme.mapper.ScheduleMapper">
+	<select id="getSchedule" parameterType="string" resultType="com.helpme.domain.ScheduleVO">
+		SELECT * FROM SCHEDULE WHERE HELPER_ID = #{helper_id} ORDER BY AVAIL_DAY ASC
+	</select>
+	
+	<update id="updateSchedule" parameterType="com.helpme.domain.ScheduleVO">
+		UPDATE SCHEDULE SET START_TIME = #{startTime}, END_TIME = #{endTime} WHERE HELPER_ID = #{helperId} AND AVAIL_DAY = #{availDay}
+	</update>
+	
+	<insert id="insertSchedule" parameterType="com.helpme.domain.ScheduleVO">
+		INSERT INTO SCHEDULE VALUES(#{helperId}, #{startTime}, #{endTime}, #{availDay})
+	</insert>
+	
+	<delete id="deleteSchedule" parameterType="map">
+		DELETE FROM SCHEDULE WHERE HELPER_ID = #{helper_id} AND AVAIL_DAY = #{avail_day}
+	</delete>
+
+</mapper>

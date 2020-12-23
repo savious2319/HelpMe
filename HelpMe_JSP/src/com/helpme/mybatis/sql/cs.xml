@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Config 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="ClientSelect">
+
+	<!-- 전체헬퍼 수 -->
+	<select id="helperCnt" resultType="_int">
+		SELECT COUNT(*) FROM HELPER
+	</select>
+	
+	<!-- 전체헬퍼 정보가져오기 -->
+	<select id="listAll" resultType="HelperVO">
+		SELECT * FROM HELPER			
+	</select>
+	
+	<!-- 헬퍼 아이디 가져오기 -->
+	<select id="helperIdList" resultType="string">
+		SELECT HELPER_ID FROM HELPER
+	</select>
+	
+	<!-- 오전일 경우 -->
+	<select id="searchHelper_1-1" parameterType="map" resultType="double">
+		SELECT SUM(END_TIME - START_TIME) FROM 
+			(SELECT * FROM RESERVATION WHERE HELPER_ID = #{helper_id} 
+			AND <![CDATA[START_TIME >= 6 AND END_TIME <= 12]]> 
+			AND MEETING_DATE = TO_DATE(#{cs_select_date}, 'YYYY/MM/DD'))
+	</select>
+	
+	<!-- 오후일경우 -->
+	<select id="searchHelper_1-2" parameterType="map" resultType="double">
+		SELECT SUM(END_TIME - START_TIME) FROM 
+			(SELECT * FROM RESERVATION WHERE HELPER_ID = #{helper_id} 
+			AND <![CDATA[START_TIME >= 13 AND END_TIME <= 18]]> 
+			AND MEETING_DATE = TO_DATE(#{cs_select_date}, 'YYYY/MM/DD'))
+	</select>
+	
+	<!-- 저녁일경우 -->
+	<select id="searchHelper_1-3" parameterType="map" resultType="double">
+		SELECT SUM(END_TIME - START_TIME) FROM 
+			(SELECT * FROM RESERVATION WHERE HELPER_ID = #{helper_id} 
+			AND <![CDATA[START_TIME >= 19 AND END_TIME <= 24]]> 
+			AND MEETING_DATE = TO_DATE(#{cs_select_date}, 'YYYY/MM/DD'))
+	</select>
+	
+	<!-- 조건검색완료 헬퍼아이디 가져오기 -->
+	<select id="searchHelper_2" parameterType="map" resultType="string">
+		SELECT a.HELPER_ID FROM HELPER a 
+			INNER JOIN SCHEDULE s 
+			ON a.HELPER_ID = s.HELPER_ID 
+			INNER JOIN HELPER_SPECIALTY h 
+			ON a.HELPER_ID = h.HELPER_ID 
+			WHERE s.AVAIL_DAY = #{cs_dayNum} AND a.HELP_LOCATION = #{cs_area} AND h.SPECIALIZED_FIELD = #{cs_service}
+	</select>
+	
+
+</mapper>
+
+

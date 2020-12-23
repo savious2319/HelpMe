@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN" "http://mybatis.org/dtd/mybatis-3-config.dtd">
+
+<configuration>
+	<typeAliases>
+		<typeAlias type="com.helpme.app.schedule.vo.ScheduleVO" alias="ScheduleVO"/>
+		<typeAlias type="com.helpme.app.reservation.vo.ReservationVO" alias="ReservationVO"/>
+		<typeAlias type="com.helpme.app.client.vo.ClientVO" alias="ClientVO"/>
+		<typeAlias type="com.helpme.app.helper.vo.HelperVO" alias="HelperVO"/>
+		<typeAlias type="com.helpme.app.helper.vo.Helper_EducationVO" alias="Helper_EducationVO"/>
+		<typeAlias type="com.helpme.app.helper.vo.Helper_WorkVO" alias="Helper_WorkVO"/>
+		<typeAlias type="com.helpme.app.helper.vo.Helper_CertificateVO" alias="Helper_CertificateVO"/>
+		<typeAlias type="com.helpme.app.helper.vo.Helper_LanguagesVO" alias="Helper_LanguagesVO"/>
+		<typeAlias type="com.helpme.app.helper.vo.Helper_PicsVO" alias="Helper_PicsVO"/>
+		<typeAlias type="com.helpme.app.helper.vo.Helper_SpecialtyVO" alias="Helper_SpecialtyVO"/>
+		<typeAlias type="com.helpme.app.board.vo.Helpme_BoardVO" alias="Helpme_BoardVO"/>
+		<typeAlias type="com.helpme.app.board.vo.Helpme_Board_ReplyVO" alias="Helpme_Board_ReplyVO"/>
+		<typeAlias type="com.helpme.app.board.vo.Helpme_FilesVO" alias="Helpme_FilesVO"/>
+	</typeAliases>
+
+   <environments default="development">
+      <environment id="development">
+         <transactionManager type="JDBC"/>
+         <dataSource type="POOLED">
+            <property name="driver" value="oracle.jdbc.OracleDriver"/>
+            <property name="url" value="jdbc:oracle:thin:@localhost:1521:XE"/>
+            <property name="username" value="hr"/>
+            <property name="password" value="hr"/>
+         </dataSource>
+      </environment>
+   </environments>
+   
+   <mappers> 
+   		<mapper resource ="com/helpme/mybatis/sql/schedule.xml"/>
+   		<mapper resource ="com/helpme/mybatis/sql/board.xml"/>
+   		<mapper resource ="com/helpme/mybatis/sql/client.xml"/>
+   		<mapper resource ="com/helpme/mybatis/sql/reservation.xml"/>
+   		<mapper resource ="com/helpme/mybatis/sql/files.xml"/>
+   		<mapper resource ="com/helpme/mybatis/sql/helper.xml"/>
+   		<mapper resource ="com/helpme/mybatis/sql/rating_cnt.xml"/>
+   		<mapper resource ="com/helpme/mybatis/sql/cs.xml"/>
+   </mappers>
+   
+</configuration>

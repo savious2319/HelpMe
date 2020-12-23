@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Config 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="Client">
+
+	<!-- 고객 회원 가입 -->
+	<insert id="signup" parameterType="ClientVO">
+		INSERT INTO CLIENT(CLIENT_NO, CLIENT_ID, PASSWORD, NAME, EMAIL, COUNTRY, ADDRESS, PHONE_NUMBER)
+		VALUES(CLIENT_SEQ.NEXTVAL, #{client_id}, #{password}, #{name}, #{email}, #{country}, #{address}, #{phone_number})
+	</insert>
+	
+	<!-- 아이디 중복 검사 -->
+	<select id="checkId" parameterType="string" resultType="int">
+		SELECT COUNT(*) FROM CLIENT WHERE CLIENT_ID = #{client_id} 
+	</select>
+	
+	<!-- 고객 로그인 -->
+	<select id="login" parameterType="map" resultType="string">
+		SELECT CLIENT_ID FROM CLIENT 
+		WHERE CLIENT_ID = #{client_id} AND PASSWORD = #{client_password}
+	</select>
+	
+	<!-- 고객 아이디로 고객 정보 조회하기 -->
+	<select id="getDetailById" parameterType="string" resultType="ClientVO">
+		SELECT * FROM CLIENT WHERE CLIENT_ID = #{client_id}
+	</select>
+	
+	<!-- 고객 번호로 고객 정보 조회하기 -->
+	<select id="getDetailByNum" parameterType="_int" resultType="ClientVO">
+		SELECT * FROM CLIENT WHERE CLIENT_NO = ${client_no}
+	</select>
+	
+	<!-- 고객 이름으로 고객 번호 조회하기 -->
+	<select id="getClientNo" parameterType="string" resultType="_int">
+		SELECT CLIENT_NO FROM CLIENT WHERE NAME = #{client_name}
+	</select>
+	
+	<!-- 헬퍼가 이름한 고객이름으로 고객 이름 조회하기 -->
+	<select id="getClientNameByName" parameterType="string" resultType="string">
+		SELECT NAME FROM CLIENT WHERE NAME = #{client_name}
+	</select>
+	
+	<!-- 고객 번호로 고객 이름 조회하기 -->
+	<select id="getClientName" parameterType="_int" resultType="string">
+		SELECT NAME FROM CLIENT WHERE CLIENT_NO = ${client_no}
+	</select>
+	
+	<!-- 고객 패스워드 수정 -->
+	<update id="updatePw" parameterType="map">
+		UPDATE CLIENT SET PASSWORD = #{password} WHERE CLIENT_ID = #{client_id}
+	</update>
+	
+	<!-- 고객 이메일 수정 -->
+	<update id="updateEmail" parameterType="map">
+		UPDATE CLIENT SET EMAIL = #{email} WHERE CLIENT_ID = #{client_id}
+	</update>
+	
+	<!-- 고객 핸드폰 번호 수정 -->
+	<update id="updatePhoneNumber" parameterType="map">
+		UPDATE CLIENT SET PHONE_NUMBER = #{phone} WHERE CLIENT_ID = #{client_id}
+	</update>
+	
+	<!-- 고객 계정 삭제 -->
+	<delete id="deleteAccount" parameterType="_int">
+		DELETE FROM CLIENT WHERE CLIENT_NO = ${client_no}
+	</delete>
+	
+	
+	
+	<!-- 최명기 -->
+	
+	<!-- 아이디 찾기 -->
+	<select id="findId" parameterType="map" resultType="string">
+		SELECT CLIENT_ID FROM CLIENT WHERE NAME = #{client_name} AND EMAIL = #{client_email}
+	</select>
+	
+	<!-- 비밀번호 찾기 -->
+	<!-- 해당 회원이 있는지 없는지 검증...? -->
+	<select id="findPw" parameterType="map" resultType="string">
+		SELECT COUNT(*) FROM CLIENT WHERE CLIENT_ID = #{client_id} AND EMAIL = #{client_email}
+	</select>
+	
+	<!-- 비밀번호 변경 -->
+	<update id="changePw" parameterType="map">
+		UPDATE CLIENT SET PASSWORD = #{client_password} WHERE CLIENT_ID = #{client_id}
+	</update>
+	
+	<!-- 이름, 이메일 중복 -->
+	<select id="memberCheck" parameterType="map" resultType="_int">
+		SELECT COUNT(*) FROM CLIENT WHERE NAME=#{client_name} OR EMAIL = #{client_email}
+	</select>
+</mapper>
+

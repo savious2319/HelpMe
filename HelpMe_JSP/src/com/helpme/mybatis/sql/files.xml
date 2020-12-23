@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Config 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="Files">
+	<!-- 업로드된 파일 정보 가져오기 -->
+	<select id="getDetail" parameterType="_int" resultType="Helpme_FilesVO">
+		SELECT * FROM HELPME_FILES WHERE BOARD_NUM = ${board_num}
+	</select>
+
+	<!-- 파일 업로드 -->
+	<insert id="insertFile" parameterType="map">
+		INSERT INTO HELPME_FILES VALUES(#{file_name}, ${board_num})
+	</insert>
+	
+	<!-- 업로드한 파일 삭제 -->
+	<delete id="deleteFiles" parameterType="_int">
+		DELETE FROM HELPME_FILES WHERE BOARD_NUM = ${board_num}	
+	</delete>
+</mapper>

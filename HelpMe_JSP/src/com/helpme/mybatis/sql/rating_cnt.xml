@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Config 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="Rating">
+	
+	<!-- 헬퍼 아이디와 고객 번호로 평점 카운트 조회하기 -->
+	<select id="getCnt" parameterType="map" resultType="_int">
+		SELECT RATE_CNT FROM RATING_CNT 
+		WHERE HELPER_ID = #{helper_id} AND CLIENT_NO = ${client_no}
+	</select>
+	
+	<!-- 평점 카운트 등록하기 -->
+	<insert id="insertCnt" parameterType="map">
+		INSERT INTO RATING_CNT(HELPER_ID, CLIENT_NO)
+		VALUES(#{helper_id}, ${client_no})
+	</insert>
+	
+	<!-- 평점 카운트 수정하기 -->
+	<update id="updateCnt" parameterType="map">
+		UPDATE RATING_CNT SET RATE_CNT = RATE_CNT + 1 WHERE HELPER_ID = #{helper_id} AND CLIENT_NO = ${client_no}
+	</update>
+</mapper>

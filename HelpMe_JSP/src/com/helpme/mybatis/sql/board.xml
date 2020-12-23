@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Config 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="Board">
+	<!--
+		파라미터로 받은 값에 접근할 때 #{}, ${}로 사용한다.
+		1. #{}
+			받아온 파라미터의 타입에 상관없이 String타입으로 변경된다.
+			사용자가 직접 입력한 값에 사용하는 것이 좋다(보안에 유리하다)
+		2. ${}
+			받아온 파라미터의 타입을 그대로 유지한다.
+			사용자가 직접 입력한 값을 전달받을 때에는 사용하지 않는 것이 좋다(쿼리 주입 보안에 취약하다)
+			테이블이나 컬럼명을 파라미터로 받을 때에 사용한다(#{}은 자동으로 따옴표가 붙기 때문)
+	-->
+	<!--	
+		1. board.xml에 전체 게시글 개수를 가져오는 쿼리문 작성
+		SELECT COUNT(*) FROM BOARD;
+		BOARD 테이블에서 전체 행을 가져온 후 전체 행의 총 개수를 구해준다.
+	-->
+	<!-- 리스트 정보 가져오기 -->
+	<select id="listAll" parameterType="map" resultType="Helpme_BoardVO">
+		SELECT * FROM
+			(SELECT ROWNUM R, D.* FROM
+				(SELECT * FROM HELPME_BOARD B ORDER BY BOARD_NUM DESC) D) B
+					WHERE B.R BETWEEN ${startRow} AND ${endRow}
+	</select>
+	
+	<!-- 등록된 후기의 수 -->
+	<select id="boardCnt" resultType="_int">
+		SELECT COUNT(*) FROM HELPME_BOARD
+	</select>
+	
+	<!-- board_num 조회 -->
+	<select id="getSeq" resultType="_int">
+		SELECT HELPME_BOARD_SEQ.CURRVAL FROM DUAL
+	</select>
+	
+	<!-- helper_reviewBoardView에 나오는 정보들 조회 -->
+	<select id="getDetail" parameterType="_int" resultType="Helpme_BoardVO">
+		SELECT B.*, (SELECT C.CLIENT_ID FROM CLIENT C WHERE B.CLIENT_NO = C.CLIENT_NO) AS CLIENT_ID FROM HELPME_BOARD B WHERE B.BOARD_NUM = ${board_num}
+	</select>
+	
+	<!-- 후기 작성 -->
+	<insert id="insertBoard" parameterType="Helpme_BoardVO">
+		INSERT INTO HELPME_BOARD 
+		VALUES(HELPME_BOARD_SEQ.NEXTVAL,(SELECT CLIENT_NO FROM CLIENT WHERE CLIENT_ID = #{client_id}), 
+			#{board_category}, #{board_title}, #{board_contents}, SYSDATE, 0, 0)
+	</insert>
+	
+	<!-- 조회수 -->
+	<!-- READCOUNT는 필요할 경우 추후 이름 바꾸기 -->
+	<update id="updateViewCount" parameterType="_int">
+		UPDATE HELPME_BOARD 
+		SET VIEW_COUNT = VIEW_COUNT +1 
+		WHERE BOARD_NUM = ${board_num}
+	</update>
+	
+	<!-- 댓글을 쓸 때는 조회수를 유지시킬 필요가 있다. -->
+	<update id="stayViewCount" parameterType="_int">
+		UPDATE HELPME_BOARD 
+		SET VIEW_COUNT = VIEW_COUNT -1 
+		WHERE BOARD_NUM = ${board_num}
+	</update>
+	
+	<!-- 좋아요 수 -->
+	<!-- 마찬가지로 LIKECOUNT는 필요하면 추후 이름 바꾸기 -->
+	<!-- 좋아요를 눌렀을 때만 숫자가 올라가도록 -->
+	<update id="updateLikeCount" parameterType="_int">
+		UPDATE HELPME_BOARD 
+		SET LIKE_COUNT = LIKE_COUNT +1 
+		WHERE BOARD_NUM = ${board_num}
+	</update>
+	
+	<!-- 후기 수정 -->
+	<update id="updateBoard" parameterType="Helpme_BoardVO">
+		UPDATE HELPME_BOARD 
+		SET BOARD_CATEGORY = #{board_category}, BOARD_TITLE = #{board_title}, BOARD_CONTENTS = #{board_contents} 
+		WHERE BOARD_NUM = ${board_num}
+	</update>
+	
+	<!-- 후기 삭제 -->
+	<delete id="deleteBoard" parameterType="_int">
+		DELETE FROM HELPME_BOARD WHERE BOARD_NUM = ${board_num}
+	</delete>
+	
+	<!-- 후기글을 삭제할 경우 그 후기에 달려있는 모든 댓글 삭제 -->
+	<delete id="deleteAllReply" parameterType="_int">
+		DELETE FROM HELPME_BOARD_REPLY WHERE BOARD_NUM = ${board_num}
+	</delete>
+	
+	<!-- 댓글 정보 가져오기 -->
+	<select id="getReply" parameterType="_int" resultType="Helpme_Board_ReplyVO">
+		SELECT R.*, (SELECT C.CLIENT_ID FROM CLIENT C WHERE R.CLIENT_NO = C.CLIENT_NO) AS CLIENT_ID 
+		FROM HELPME_BOARD_REPLY R 
+		<!-- FULL OUTER JOIN HELPME_BOARD B ON R.CLIENT_NO=B.CLIENT_NO  -->
+		WHERE BOARD_NUM = ${board_num} ORDER BY REPLY_NUM DESC
+	</select>
+	
+	<!-- 댓글 등록 -->
+	<insert id="insertReply" parameterType="Helpme_Board_ReplyVO">
+		INSERT INTO HELPME_BOARD_REPLY 
+		VALUES(HELPME_REPLY_SEQ.NEXTVAL, ${board_num}, (SELECT CLIENT_NO FROM CLIENT WHERE CLIENT_ID = #{client_id}), #{reply_contents})
+	</insert>
+	
+	<!-- 댓글 수정 -->
+	<update id="updateReply" parameterType="map">
+		UPDATE HELPME_BOARD_REPLY 
+		SET REPLY_CONTENTS = #{reply_contents} 
+		WHERE REPLY_NUM = ${reply_num}
+	</update>
+	
+	<!-- 댓글 삭제 -->
+	<delete id="deleteReply" parameterType="_int">
+		DELETE FROM HELPME_BOARD_REPLY WHERE REPLY_NUM = ${reply_num}
+	</delete>
+	
+	<!-- 동일 게시글 추천 여부 검색 -->
+	<select id="likeCheck" parameterType="map" resultType="int">
+		SELECT COUNT(*) FROM HELPME_BOARD_LIKE WHERE CLIENT_ID = #{client_id} AND BOARD_NUM = #{board_num}
+	</select>
+	
+	<!-- 게시글 추천 -->
+	<insert id="likeUpdate" parameterType="map">
+		INSERT INTO HELPME_BOARD_LIKE VALUES((SELECT CLIENT_NO FROM CLIENT WHERE CLIENT_ID = #{client_id}),#{client_id}, #{board_num})
+	</insert>
+	
+	<!-- 게시글 추천 취소 -->
+	<delete id="likeDelete" parameterType="map">
+		DELETE FROM HELPME_BOARD_LIKE WHERE CLIENT_ID = #{client_id} AND BOARD_NUM = #{board_num}
+	</delete>
+	
+	<!-- 게시글 추천수 -->
+	<select id="likeCount" parameterType="int" resultType="int">
+		SELECT  COUNT(*) FROM HELPME_BOARD_LIKE WHERE BOARD_NUM = #{board_num}
+	</select>
+	
+</mapper>

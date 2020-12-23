@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Config 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.helpme.mapper.RatingCntMapper">
+	<select id="getCnt" parameterType="map" resultType="_int">
+		SELECT RATE_CNT FROM RATING_CNT 
+		WHERE HELPER_ID = #{helper_id} AND CLIENT_NO = #{client_no}
+	</select>
+	
+	<insert id="insertCnt" parameterType="map">
+		INSERT INTO RATING_CNT(HELPER_ID, CLIENT_NO)
+		VALUES(#{helper_id}, #{client_no})
+	</insert>
+	
+	<update id="updateCnt" parameterType="map">
+		UPDATE RATING_CNT SET RATE_CNT = RATE_CNT + 1 WHERE HELPER_ID = #{helper_id} AND CLIENT_NO = #{client_no}
+	</update>
+</mapper>

@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Config 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="Reservation">
+	
+	<!-- 헬퍼 아이디로 모든 예약정보 조회하기 -->
+	<select id="getReservationByHelperId" parameterType="string" resultType="ReservationVO">
+		SELECT * FROM RESERVATION WHERE HELPER_ID = #{helper_id}
+	</select>
+	
+	<!-- 고객 번호로 모든 예약정보 조회하기 -->
+	<select id="getReservationByClientNo" parameterType="_int" resultType="ReservationVO">
+		SELECT * FROM RESERVATION WHERE CLIENT_NO = ${client_no}
+	</select>
+
+	<!-- 고객 번호와 헬퍼 아이디로 로우넘이 1인 예약번호 조회하기 -->
+	<select id="getResNo" parameterType="map" resultType="_int">
+		SELECT RES_NO FROM (SELECT RES_NO FROM RESERVATION WHERE CLIENT_NO = ${client_no} AND HELPER_ID = #{helper_id}
+		ORDER BY RES_NO DESC) WHERE ROWNUM = 1		
+	</select>
+	
+	<!-- 고객 번호로 전체 예약 수 조회하기 -->
+	<select id="getReservationCount" parameterType="_int" resultType="_int">
+		SELECT COUNT(*) FROM RESERVATION WHERE CLIENT_NO = ${client_no}
+	</select>
+	
+	<!-- 예약정보 추가하기 -->
+	<insert id="insertReservation" parameterType="ReservationVO">
+		INSERT INTO RESERVATION (RES_NO, SERVICE, HELPER_ID, CLIENT_NO, MEETING_AREA, MEETING_PLACE, MEETING_DATE, 
+		START_TIME, END_TIME, POINTS_SPENT)
+		VALUES(RESERVATION_SEQ.NEXTVAL, #{service}, #{helper_id}, ${client_no},
+		#{meeting_area}, #{meeting_place}, TO_DATE(#{meeting_date}, 'YYYY/MM/DD'), ${start_time}, ${end_time}, ${points_spent})
+	</insert>
+	
+	<!-- 예약번호로 예약 삭제하기 -->
+	<delete id="deleteReservationByResNo" parameterType="_int">
+		DELETE RESERVATION WHERE RES_NO = ${res_no}
+	</delete>
+	
+</mapper>
